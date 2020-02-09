@@ -1,0 +1,24 @@
+Readme
+Structure of Problems
+
+problems
+	|
+	--- problem_name
+			|
+			--- testcases.cfg
+			|
+			--- solution.py
+			|
+			--- i.in [for i in [1,number of test cases]]
+
+testcases.cfg contains 2 lines.
+	1. The number of testcases
+	2. The time limit for execution (in seconds [int])
+
+solution.py is the intended solution
+	Used to generate "correct output" for each test case on the fly
+	Should read from standard input
+
+i.in is the ith input file.
+	Student's solution should read from standard input
+	

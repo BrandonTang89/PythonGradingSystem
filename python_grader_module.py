@@ -26,8 +26,8 @@ else:
     '''
 
 def grade_solution(target_problem, student_solution ):
-    student_file_name = "student_" + str(randint(0,1000)) + ".py" # Random int to prevent overwrite of other executing files
-    time_limit = 2 # maximum execution time
+    student_base_name = "student_" + str(randint(0,1000)) + ".py"
+    student_file_name = "student_code/" + student_base_name# Random int to prevent overwrite of other executing files
     print("Saving Solution to:", student_file_name)
     target_problem =  "problems/" + target_problem
     
@@ -41,7 +41,8 @@ def grade_solution(target_problem, student_solution ):
     # Read Meta Data about Problem
     solution_file_name = target_problem + "/solution.py"
     with open(target_problem + "/testcases.cfg") as f:
-        number_of_test_cases = int(f.read())
+        number_of_test_cases = int(f.readline())
+        time_limit = int(f.readline())
 
     score = 0
     state = "Normal"
@@ -51,7 +52,9 @@ def grade_solution(target_problem, student_solution ):
         print(" Correct Output: " +  correct_out)
 
         try:
-            student_out = str(check_output("cat " + target_problem + "/" +  str(i) +".in | python3 " + student_file_name, timeout=time_limit, shell=True))
+            #student_out = str(check_output("cat " + target_problem + "/" +  str(i) +".in | python3 " + student_file_name, timeout=time_limit, shell=True))
+            # Docker Containerisation
+            student_out = str(check_output("cat " + target_problem + "/" +  str(i) + '.in  | docker run -i --rm -v "$(pwd)/student_code":/student -w /student python:3 python3 ' + student_base_name,shell=True))
         except TimeoutExpired:
             print(" Solution Time Limit Exceeded [TLE]")
             

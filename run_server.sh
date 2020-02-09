@@ -1,3 +1,5 @@
+sudo rm -r student_code
+mkdir student_code
 while true
 do
 	export FLASK_APP=web_server.py
