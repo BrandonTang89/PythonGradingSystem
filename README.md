@@ -75,7 +75,7 @@ The grader then iterates through each testcase in the problem that is being atte
 In the event of the student code taking longer than the allowed time to execute, a "time limit exceeded (TLE)" response is given. If the student's code encounters an exception, a "runtime error (RTE)" response is returned. Else, either a "wrong answer (WA)" or "all correct (AC)" response is given.
 
 ## Untrusted Code Execution Details
-To prevent execution of malicious code that could destory the host machine, this project uses docker conntainers to sandbox the execution of the student scripts. Whenver a student script is executed, a docker python:3 container is created which has access to the "student_code" directory via a volume mount. The student script is then executed within the docker container.
+To prevent execution of malicious code that could destroy the host machine, this project uses docker conntainers to sandbox the execution of the student scripts. Whenver a student script is executed, a docker python:3 container is created which has access to the "student_code" directory via a volume mount. The student script is then executed within the docker container.
 
 Thus, the only directory that can be affected by the student code is the "student_code" directory which will be emptied upon restarting the server.
 
