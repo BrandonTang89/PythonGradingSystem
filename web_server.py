@@ -27,4 +27,4 @@ def submit():
     return (json.dumps({'status':'OK', "Problem":problem_name, "Score":score, "number_of_test_cases": number_of_test_cases, "percentage": percentage, "outcome": outcome}))
 
 if __name__ == "__main__":
-    app.run(port='3000', host='0.0.0.0')
+    app.run(port='8081', host='0.0.0.0')
