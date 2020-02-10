@@ -25,3 +25,6 @@ def submit():
     (score, number_of_test_cases, percentage, outcome) = grade_solution(problem_name, student_source_code)
     
     return (json.dumps({'status':'OK', "Problem":problem_name, "Score":score, "number_of_test_cases": number_of_test_cases, "percentage": percentage, "outcome": outcome}))
+
+if __name__ == "__main__":
+    app.run(port='3000', host='0.0.0.0')
