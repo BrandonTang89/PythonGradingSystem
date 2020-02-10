@@ -36,6 +36,13 @@ chmod +x run_deployment_server.sh
 </pre>
 *The sudo prompt is for deleting the cached student submissions folder that may be write protected by docker*
 
+Note, in the "python_grader_module.py", one can choose whether or not to use Docker sandboxing (see below). It is highly recommended to enable that (default) to protect one's infrastructure. However, if you trust your users or are running the system on an already sandboxed machine (like a VM), then disabling the option results in higher grading speeds due to less overhead in starting the docker container for each testcase.
+
+To disable docker sandboxing, edit line 5 of "python_grader_module.py"
+<pre>
+use_docker = False
+</pre>
+
 ## Adding New Problems
 Each problem in the judge is a separate directory in the "problems" folder where the problem name is the directory name.
 
