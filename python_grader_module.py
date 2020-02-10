@@ -2,6 +2,8 @@ from subprocess import check_output
 from subprocess import TimeoutExpired
 from random import randint
 
+use_docker = True
+
 student_solution = '''
 sequence = input()
 valid= True
@@ -51,17 +53,20 @@ def grade_solution(target_problem, student_solution ):
         print(" Correct Output: " +  correct_out)
 
         try:
-            #student_out = str(check_output("cat " + target_problem + "/" +  str(i) +".in | python3 " + student_file_name, timeout=time_limit, shell=True))
-            # Docker Containerisation
-            student_out = str(check_output("cat " + target_problem + "/" +  str(i) + '.in  | docker run -i --rm -v "$(pwd)/student_code":/student --name '+ student_base_name + ' -w /student python:3 python3 ' + student_base_name,timeout=time_limit, shell=True))
+                        # Docker Containerisation
+            if use_docker:
+                student_out = str(check_output("cat " + target_problem + "/" +  str(i) + '.in  | docker run -i --rm -v "$(pwd)/student_code":/student --name '+ student_base_name + ' -w /student python:3 python3 ' + student_base_name,timeout=time_limit, shell=True))
+            else:
+                student_out = str(check_output("cat " + target_problem + "/" +  str(i) +".in | python3 " + student_file_name, timeout=time_limit, shell=True))
+
             print(" Student Output: " +  student_out)
         except TimeoutExpired:
             print(" Solution Time Limit Exceeded [TLE]")
-    
 
             # kill running docker container
-            check_output("docker kill " + student_base_name, shell=True)
-            print(" Killed Hanging Docker Container")
+            if use_docker:
+                check_output("docker kill " + student_base_name, shell=True)
+                print(" Killed Hanging Docker Container")
             
             if state == "Normal":
                 state = "TLE"
