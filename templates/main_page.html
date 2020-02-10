@@ -14,9 +14,6 @@
                 background-color: #e6ffff;
             }
             
-            #progress{
-                showActivity: false;
-            }
         </style>
 	</head>
 	<body>
@@ -44,12 +41,21 @@
             <button id="disabled_button" class="ui disabled button" tabindex="0" type="button">Submit</button>
             </form>
             
-
+            
             <form class="ui form">
+               
+                
                 <div class="field">
 
                     <label>Result</label>
-                    <textarea readonly id="result" placeholder="Results"></textarea>
+                    <div class="ui basic segment" style="padding: 0px;">
+                          <div class="ui inverted dimmer" id="loading_dimmer">
+                            <div class="ui text loader">Grading Your Solution</div>
+                          </div>
+                        <textarea readonly id="result" placeholder="Results">
+                        </textarea>
+                    </div>
+                    
                 </div>
             </form>
             
@@ -115,6 +121,7 @@
                 // Display Submit Button Again
                 $("#disabled_button").hide();
                 $("#submit_button").show();
+                $('#loading_dimmer').removeClass("active");
                 
                 
             }
@@ -137,10 +144,14 @@
             $(function() { //JQuery Functions that only operate after the page load 
                 $("#disabled_button").hide();
                 $("#progress").hide();
-                $("#submit_button").click(function() { //Run after #submit_urls is clicked
+                $("#submit_button").click(function() { //Run after the submit button is clicked
+                    // Reset all elements
                     $("#disabled_button").show();
                     $("#submit_button").hide();
                     $("#result").html("");
+                    $('#loading_dimmer').addClass("active");
+                    $("#progress").progress('remove success');
+                    $("#progress").progress('remove error');
                     
                     urls_done=0;
                     current_printed_citation = 0
@@ -153,6 +164,7 @@
                     if (source_code === ""){
                         $("#disabled_button").hide();
                         $("#submit_button").show();
+                        $('#loading_dimmer').removeClass("active");
                         return;
                     }
                     
@@ -161,7 +173,7 @@
                     $("#progress").show();
                     $("#progress").attr("data-percent", 0);
                     $('#progress').progress({percent: 0});
-                    $("#progress_label").html("Grading Solution...");
+                    $("#progress_label").html("Hope for the Best, Prepare for the Worst...");
                     
                     
                     // Send URLs 1 at a time

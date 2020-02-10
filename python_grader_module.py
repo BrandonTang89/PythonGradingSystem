@@ -3,7 +3,6 @@ from subprocess import TimeoutExpired
 from random import randint
 
 student_solution = '''
-
 sequence = input()
 valid= True
 counter = 0
@@ -54,9 +53,15 @@ def grade_solution(target_problem, student_solution ):
         try:
             #student_out = str(check_output("cat " + target_problem + "/" +  str(i) +".in | python3 " + student_file_name, timeout=time_limit, shell=True))
             # Docker Containerisation
-            student_out = str(check_output("cat " + target_problem + "/" +  str(i) + '.in  | docker run -i --rm -v "$(pwd)/student_code":/student -w /student python:3 python3 ' + student_base_name,timeout=time_limit, shell=True))
+            student_out = str(check_output("cat " + target_problem + "/" +  str(i) + '.in  | docker run -i --rm -v "$(pwd)/student_code":/student --name '+ student_base_name + ' -w /student python:3 python3 ' + student_base_name,timeout=time_limit, shell=True))
+            print(" Student Output: " +  student_out)
         except TimeoutExpired:
             print(" Solution Time Limit Exceeded [TLE]")
+    
+
+            # kill running docker container
+            check_output("docker kill " + student_base_name, shell=True)
+            print(" Killed Hanging Docker Container")
             
             if state == "Normal":
                 state = "TLE"
@@ -77,7 +82,7 @@ def grade_solution(target_problem, student_solution ):
             
             student_out = ""
             
-        print(" Student Output: " +  student_out)
+        
 
         if student_out == correct_out:
             print("Correct")
