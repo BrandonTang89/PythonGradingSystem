@@ -2,9 +2,8 @@ from subprocess import check_output
 from subprocess import TimeoutExpired
 from random import randint
 
-use_docker = True
-
 student_solution = '''
+import os
 sequence = input()
 valid= True
 counter = 0
@@ -26,13 +25,16 @@ else:
     print("Invalid")
     '''
 
-def grade_solution(target_problem, student_solution ):
+def grade_solution(target_problem, student_solution, use_docker):
     student_base_name = "student_" + str(randint(0,1000)) + ".py"
     student_file_name = "student_code/" + student_base_name# Random int to prevent overwrite of other executing files
     print("Saving Solution to:", student_file_name)
     target_problem =  "problems/" + target_problem
-    
-    
+
+    # Prevent Importing of os and subprocess modules
+    if not use_docker:
+        student_solution = "from sys import modules\nmodules['os']=modules['subprocess']=None\n" + student_solution
+        
 
     # Write Student Solution to File
     f =  open(student_file_name, 'w')
@@ -75,7 +77,13 @@ def grade_solution(target_problem, student_solution ):
                 state += " & TLE"
             student_out = ""
             
+            
         except Exception as e:
+            if not use_docker:
+                for line in student_solution.split("\n"):
+                    if "import" in line and ("os" in line or "subprocess" in line):
+                        print("------------------------- SECURITY VIOLATION -------------------------")
+                        return (0, number_of_test_cases, 0, "SV")
             print(" Solution Runtime Error       [RTE]")
             print(" Details: " + str(e))
 
@@ -105,4 +113,4 @@ def grade_solution(target_problem, student_solution ):
     check_output("rm " + student_file_name, shell=True)
     return (score, number_of_test_cases, percentage, state)
 
-#grade_solution("bracket", student_solution)
+#grade_solution("bracket", student_solution, False)
