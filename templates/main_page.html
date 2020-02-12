@@ -13,13 +13,20 @@
             body{
                 background-color: #e6ffff;
             }
+            h2,h3{
+                display: inline;
+            }
             
         </style>
 	</head>
 	<body>
 		
         <div class="main_form">
+            <br>
             <h2>Python Task Grading System 1.0</h2>
+            <a href="https://github.com/BrandonTang89/PythonGradingSystem/wiki" target="_blank" style="float: right;"><h2>Problem Statements</h2></a>
+            
+            <br><br>
             
             <form class="ui form" role="form" id="input_form">
                 
@@ -140,10 +147,6 @@
                     $('#loading_dimmer').addClass("active");
                     $("#progress").progress('remove success');
                     $("#progress").progress('remove error');
-                    
-                    urls_done=0;
-                    current_printed_citation = 0
-                    for (var i=0; i<50; i++)citation_array[i] = "";
                     
                     console.log($('#input_form').serialize());
                     var source_code = $('#input_form').serializeArray()[1].value;
