@@ -1,0 +1,187 @@
+<html>
+	<head>
+		<title>Python Task Grading System</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='semantic/semantic/dist/semantic.min.css') }}">
+        <script src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='semantic/semantic/dist/semantic.min.js') }}"></script>
+        
+        <style>
+            .main_form{
+                margin-left: 10%;
+                margin-right: 10%;
+            }
+            body{
+                background-color: #e6ffff;
+            }
+            
+        </style>
+	</head>
+	<body>
+		
+        <div class="main_form">
+            <h2>Python Task Grading System 1.0</h2>
+            
+            <form class="ui form" role="form" id="input_form">
+                
+                <div class="eight wide field">
+                    <label>Select Problem:</label>
+                    <select class="ui search dropdown" name="problem_name">
+                        <option value="">Select Problem</option>
+                        {% for problem in problems %}
+                            <option value="{{problem}}">{{problem}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Source Code</label>
+                    <textarea placeholder="Source Code" name="source_code"></textarea>
+                </div>
+            <button id="submit_button" class="ui button" tabindex="0" type="button">Submit</button>
+            <button id="disabled_button" class="ui disabled button" tabindex="0" type="button">Submit</button>
+            </form>
+            
+            
+            <form class="ui form">
+               
+                
+                <div class="field">
+
+                    <label>Result</label>
+                    <div class="ui basic segment" style="padding: 0px;">
+                          <div class="ui inverted dimmer" id="loading_dimmer">
+                            <div class="ui text loader">Grading Your Solution</div>
+                          </div>
+                        <textarea readonly id="result" placeholder="Results">
+                        </textarea>
+                    </div>
+                    
+                </div>
+            </form>
+            
+            <div class="ui  indicating progress" id="progress" >
+                <div class="bar"> </div>
+                <div class="label" id="progress_label">Score: </div>
+            </div>
+        </div>        
+        <script>
+            $('select.dropdown')
+              .dropdown()
+            ;
+            
+            //alert("hello");
+            var urls_done = 0;
+            var citation_array = new Array(50);
+            var current_printed_citation = 0;
+            
+            function update_result(response){
+                response = JSON.parse(response);
+                var problem = response["Problem"];
+                var score = response["Score"];
+                var number_of_test_cases = response["number_of_test_cases"];
+                var percentage = response["percentage"];
+                var outcome = response["outcome"];
+                
+                // Print Metrics to Screen
+                $("#result").append("Problem Name: " + problem + '\n');
+                $("#result").append("Number of Test Cases: " + number_of_test_cases + '\n');
+                $("#result").append("Number of Test Cases Successful: " + score + '\n');
+                $("#result").append("Percentage Successful: " + percentage + '%\n');
+                $("#result").append("Submission Status: " + outcome + '\n');
+                
+                // Score Bar
+                $('#progress').progress({
+                  percent: percentage
+                });
+                $("#progress_label").html("Percentage Score: "+ percentage.toFixed(2) +"%");
+                $("#progress").attr("data-percent", percentage);
+                setTimeout(function(){
+                    $("#progress").progress('remove active');
+                }, 1000);
+                
+                if (outcome.includes("RTE") || outcome.includes("TLE") || outcome.includes("SV")){
+                    $("#progress").progress('set error');
+                    if (outcome.includes("RTE")){
+                        $("#progress_label").html("Runtime Error");
+                    }
+                    else if (outcome.includes("TLE")){
+                        $("#progress_label").html("Time Limit Exceeded");
+                    }
+                    else if ( outcome.includes("SV")){
+                        $("#progress_label").html("SECURITY VIOLATION!!");
+                    }
+                    
+                }
+                else{
+                    if(score == number_of_test_cases){
+                        $("#progress_label").append(" [All Correct]");
+                    }
+                    else{
+                        $("#progress_label").append(" [Wrong Answer]");
+                    }
+                }
+                
+                // Display Submit Button Again
+                $("#disabled_button").hide();
+                $("#submit_button").show();
+                $('#loading_dimmer').removeClass("active");
+                
+                
+            }
+            
+            
+            $(function() { //JQuery Functions that only operate after the page load 
+                $("#disabled_button").hide();
+                $("#progress").hide();
+                $("#submit_button").click(function() { //Run after the submit button is clicked
+                    // Reset all elements
+                    $("#disabled_button").show();
+                    $("#submit_button").hide();
+                    $("#result").html("");
+                    $('#loading_dimmer').addClass("active");
+                    $("#progress").progress('remove success');
+                    $("#progress").progress('remove error');
+                    
+                    console.log($('#input_form').serialize());
+                    var source_code = $('#input_form').serializeArray()[1].value;
+                    
+                    // Deal with empty input
+                    if (source_code === ""){
+                        $("#disabled_button").hide();
+                        $("#submit_button").show();
+                        $('#loading_dimmer').removeClass("active");
+                        return;
+                    }
+                    
+                    //  Prep Progress bar
+                    
+                    $("#progress").show();
+                    $("#progress").attr("data-percent", 0);
+                    $('#progress').progress({percent: 0});
+                    $("#progress_label").html("Hope for the Best, Prepare for the Worst...");
+                    
+                    
+                    // Send URLs 1 at a time
+                    var raw_data = $('#input_form').serializeArray();
+                    console.log(raw_data); 
+                        
+                    $.ajax({
+                        url: '/submit',
+                        data: raw_data,
+                        type: 'POST',
+                        success: function(response) {
+                            console.log(response);
+                            update_result(response);
+                            
+                
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                    
+                });
+            });
+            
+        </script>
+	</body>
+</html>
