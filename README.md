@@ -3,6 +3,8 @@ A Mini Online Judge Server to help grade short programming assignments in python
 
 This is a simplified online grading system to evaluate programming assignments written in python 3+. It is scalable with new problems being able to be added and has an integrated online portal for submission of source code (in plain text).
 
+> Note that as of July 2022, the dockerisation is broken and the server will run without it by default.
+
 ## Dependencies
 Install the required dependencies of 
 1. python 3.6+
@@ -20,7 +22,7 @@ pip3 install flask
 To install gunicorn3
 <pre>
 sudo apt-get update
-sudo apt-get install gunicorn3
+sudo apt-get install gunicorn
 </pre>
 
 To install docker, follow [the instruction guide here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04). **Important: Follow the steps to run docker without sudo.**
@@ -38,9 +40,9 @@ chmod +x run_deployment_server.sh
 
 Note, in the "python_grader_module.py", one can choose whether or not to use Docker sandboxing (see below). It is highly recommended to enable that (default) to protect one's infrastructure. However, if you trust your users or are running the system on an already sandboxed machine (like a VM), then disabling the option results in higher grading speeds due to less overhead in starting the docker container for each testcase.
 
-To disable docker sandboxing, edit line 5 of "python_grader_module.py"
+To enable docker sandboxing, edit "web_server.py"
 <pre>
-use_docker = False
+use_docker = True
 </pre>
 
 ## Adding New Problems

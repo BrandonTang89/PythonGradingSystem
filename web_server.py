@@ -7,7 +7,7 @@ import json
 from python_grader_module import *
 app = Flask(__name__)
 
-use_docker = True
+use_docker = False
 
 @app.route('/')
 def hello_world():

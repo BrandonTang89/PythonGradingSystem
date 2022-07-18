@@ -2,6 +2,7 @@ from subprocess import check_output
 from subprocess import TimeoutExpired
 from random import randint
 
+
 student_solution = '''
 import os
 sequence = input()
